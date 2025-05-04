@@ -76,8 +76,9 @@ exports.verifyPayment = async (req, res) => {
   const razorpay_order_id = req.body?.razorpay_order_id
   const razorpay_payment_id = req.body?.razorpay_payment_id
   const razorpay_signature = req.body?.razorpay_signature
-  const courses = req.body?.courses
 
+
+  const courses = req.body?.courses
   const userId = req.user.id
 
   if (
@@ -107,11 +108,18 @@ exports.verifyPayment = async (req, res) => {
 
 // Send Payment Success Email
 exports.sendPaymentSuccessEmail = async (req, res) => {
-  const { orderId, paymentId, amount } = req.body
+  const { orderId, paymentId, amount } = req.body    // removed
 
+  // const {amount} = req.body;     //added
   const userId = req.user.id
 
-  if (!orderId || !paymentId || !amount || !userId) {
+  if (!orderId || !paymentId || !amount || !userId) {       //removed
+    return res
+      .status(400)
+      .json({ success: false, message: "Please provide all the details" })
+  }
+
+  if(!amount || !userId){
     return res
       .status(400)
       .json({ success: false, message: "Please provide all the details" })
@@ -127,7 +135,7 @@ exports.sendPaymentSuccessEmail = async (req, res) => {
         `${enrolledStudent.firstName} ${enrolledStudent.lastName}`,
         amount / 100,
         orderId,
-        paymentId
+        paymentId //removed
       )
     )
   } catch (error) {
@@ -197,3 +205,20 @@ const enrollStudents = async (courses, userId, res) => {
     }
   }
 }
+
+exports.directEnrollStudent = async (req, res) => {
+  const { courses } = req.body;
+  const userId = req.user.id;
+
+  if (!courses || courses.length === 0) {
+    return res.status(400).json({ success: false, message: "No courses provided" });
+  }
+
+  try {
+    await enrollStudents(courses, userId, res);
+    return res.status(200).json({ success: true, message: "Student enrolled successfully" });
+  } catch (error) {
+    console.error("Error during enrollment:", error);
+    return res.status(500).json({ success: false, message: "Enrollment failed" });
+  }
+};

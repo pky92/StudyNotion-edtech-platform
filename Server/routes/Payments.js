@@ -6,10 +6,13 @@ const {
   // verifySignature,
   verifyPayment,
   sendPaymentSuccessEmail,
+  directEnrollStudent
 } = require("../controllers/payments")
 const { auth, isInstructor, isStudent, isAdmin } = require("../middleware/auth")
 router.post("/capturePayment", auth, isStudent, capturePayment)
 router.post("/verifyPayment", auth, isStudent, verifyPayment)
+router.post("/directEnroll", auth, isStudent, directEnrollStudent);
+
 router.post(
   "/sendPaymentSuccessEmail",
   auth,

@@ -1,4 +1,5 @@
 import { toast } from "react-hot-toast"
+// import { useNavigate } from "react-router-dom";
 
 import rzpLogo from "../../assets/Logo/rzp_logo.png"
 import { resetCart } from "../../slices/cartSlice"
@@ -10,6 +11,7 @@ const {
   COURSE_PAYMENT_API,
   COURSE_VERIFY_API,
   SEND_PAYMENT_SUCCESS_EMAIL_API,
+  DIRECT_PAYMENT
 } = studentEndpoints
 
 // Load the Razorpay SDK from the CDN
@@ -141,3 +143,24 @@ async function sendPaymentSuccessEmail(response, amount, token) {
     console.log("PAYMENT SUCCESS EMAIL ERROR............", error)
   }
 }
+
+
+const directEnroll = async (token, courses, navigate) => {
+  try {
+    const response = await apiConnector("POST", DIRECT_PAYMENT , { courses }, { Authorization: `Bearer ${token}` });
+    if (response.data.success) {
+      toast.success("Enrollment successful!");
+      navigate("/dashboard/enrolled-courses");
+    } else {
+      toast.error(response.data.message || "Enrollment failed.");
+    }
+  } catch (error) {
+    console.error("Error during enrollment:", error);
+    toast.error("An error occurred during enrollment.");
+  }
+};
+
+export const handleBuyCourseDirect = (token, courses, navigate) => {
+  directEnroll(token, courses, navigate);
+};
+
