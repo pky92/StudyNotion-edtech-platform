@@ -25,7 +25,7 @@ database.connect();
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
-const cors = require('cors');
+// const cors = require('cors');
 app.use(cors({
     origin: '*', // Replace '*' with your frontend's deployed URL for better security
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
