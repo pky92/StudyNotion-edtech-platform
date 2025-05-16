@@ -25,12 +25,13 @@ database.connect();
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-	cors({
-		origin: "*",
-		credentials: true,
-	})
-);
+const cors = require('cors');
+app.use(cors({
+    origin: '*', // Replace '*' with your frontend's deployed URL for better security
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}));
+
 app.use(
 	fileUpload({
 		useTempFiles: true,
